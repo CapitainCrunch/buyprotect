@@ -176,7 +176,7 @@ def output(bot, update):
     os.remove(fname)
 
 
-updater = Updater(ALLTESTS)
+updater = Updater(BUYPROTECT)
 dp = updater.dispatcher
 dp.add_handler(CommandHandler('start', start))
 dp.add_handler(CommandHandler('unload', output))
