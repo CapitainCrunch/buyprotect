@@ -94,16 +94,16 @@ def search_wo_cat(bot, update):
     res = []
     msg = ''
     try:
-        check_aliases = (Aliases.select().where((Aliases.alias1 == message) |
-                                                (Aliases.alias2 == message) |
-                                                (Aliases.alias3 == message) |
-                                                (Aliases.alias4 == message) |
-                                                (Aliases.alias5 == message) |
-                                                (Aliases.alias6 == message) |
-                                                (Aliases.alias7 == message) |
-                                                (Aliases.alias8 == message) |
-                                                (Aliases.alias9 == message) |
-                                                (Aliases.alias10 == message))).execute()
+        check_aliases = (Aliases.select().where((fn.lower(Aliases.alias1) == message) |
+                                                (fn.lower(Aliases.alias2) == message) |
+                                                (fn.lower(Aliases.alias3) == message) |
+                                                (fn.lower(Aliases.alias4) == message) |
+                                                (fn.lower(Aliases.alias5) == message) |
+                                                (fn.lower(Aliases.alias6) == message) |
+                                                (fn.lower(Aliases.alias7) == message) |
+                                                (fn.lower(Aliases.alias8) == message) |
+                                                (fn.lower(Aliases.alias9) == message) |
+                                                (fn.lower(Aliases.alias10) == message))).execute()
         alias = [c.key for c in check_aliases]
         if alias:
             message = alias[0]
@@ -148,7 +148,7 @@ def process_file(bot, update):
             for row in sheets[sheet][1:]:
                 if not row:
                     continue
-                _data.append(dict(zip_longest(columns, [r.strip('"\'!?[]{},. \n').lower() for r in row], fillvalue='')))
+                _data.append(dict(zip_longest(columns, [r.strip('"\'!?[]{},. \n') for r in row], fillvalue='')))
             if save(_data, dbs[sheet]):
                 bot.sendMessage(uid, 'Данные на странице {} сохранил'.format(sheet), disable_notification=1)
             else:
