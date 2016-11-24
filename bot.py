@@ -1,7 +1,8 @@
 from telegram import ReplyKeyboardMarkup, ParseMode
 from emoji import emojize
 from telegram.ext import Updater, CommandHandler, RegexHandler, MessageHandler, Filters, ConversationHandler
-from config import BUYPROTECT, ALLTESTS
+from telegram.contrib.botan import Botan
+from config import BUYPROTECT, ALLTESTS, BOTAN_TOKEN
 from pyexcel_xlsx import get_data, save_data
 from itertools import zip_longest
 from collections import OrderedDict
@@ -35,6 +36,8 @@ aliases = [Aliases.alias1,
            Aliases.alias8,
            Aliases.alias9,
            Aliases.alias10]
+
+botan = Botan(BOTAN_TOKEN)
 
 search_fckup_msg = '''Мы не нашли совпадений, но приняли заявку на проверку!
 
@@ -129,6 +132,7 @@ def search_wo_cat(bot, update):
     for m in res:
         msg += '<b>{}</b>\n{}\n{}\n\n'.format(m.name, m.description, m.url)
     bot.sendMessage(uid, msg, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+    botan.track(message, event_name='search_wo_cat')
 
 
 def process_file(bot, update):
@@ -156,31 +160,6 @@ def process_file(bot, update):
         os.remove(fname)
 
 
-def search(bot, update):
-    print(update)
-    uid = update.message.from_user.id
-    message = update.message.text.strip('"\'!?[]{},. ')
-    res = []
-    msg = ''
-    before_request_handler()
-    try:
-        Model = user_search.pop(uid)
-        search = Model.get(fn.lower(Model.name) == message.lower())
-        res.append((search.name, search.description, search.url))
-    except DoesNotExist:
-        after_request_handler()
-        if unknown_req_add(uid, message.strip('"\'!?[]{},. ')):
-            bot.sendMessage(uid, search_fckup_msg, disable_web_page_preview=True)
-        else:
-            bot.sendMessage(uid, search_fckup_msg, disable_web_page_preview=True)
-            return
-        return
-    for name, description, url in res:
-        msg += '<b>{}</b>\n{}\n{}\n\n'.format(name, description, url)
-    bot.sendMessage(uid, msg, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
-    return ConversationHandler.END
-
-
 def output(bot, update):
     print(update)
     uid = update.message.from_user.id
@@ -196,7 +175,6 @@ def output(bot, update):
     save_data(fname, foud)
     bot.sendDocument(uid, document=open(fname, 'rb'))
     os.remove(fname)
-
 
 
 updater = Updater(BUYPROTECT)
