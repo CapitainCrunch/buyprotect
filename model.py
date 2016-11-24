@@ -70,8 +70,6 @@ class Aliases(BaseModel):
     dt = DateTimeField(default=datetime.now())
 
 
-db.connect()
-
 def init_db():
     tables = [Users, Company, Good, Service, UndefinedRequests, Aliases]
     for t in tables:

@@ -10,7 +10,7 @@ from datetime import datetime as dt
 import os
 from model import save, Users, \
     UndefinedRequests, Company, Good, Service, Aliases, DoesNotExist, fn, \
-    before_request_handler, after_request_handler, JOIN
+    before_request_handler, after_request_handler
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logging.basicConfig(filename='logs.log', filemode='w+', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
