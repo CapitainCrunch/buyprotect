@@ -56,7 +56,7 @@ class UndefinedRequests(BaseModel):
 
 class Aliases(BaseModel):
     id = PrimaryKeyField()
-    key = CharField()
+    key = CharField(unique=1)
     alias1 = CharField(default=None)
     alias2 = CharField(default=None)
     alias3 = CharField(default=None)
