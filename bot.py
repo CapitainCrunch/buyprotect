@@ -87,7 +87,6 @@ def start(bot, update):
         bot.sendMessage(uid, msg)
         return
     bot.sendMessage(uid, msg)
-    return ConversationHandler.END
 
 
 def search_wo_cat(bot, update):
@@ -132,7 +131,7 @@ def search_wo_cat(bot, update):
     for m in res:
         msg += '<b>{}</b>\n{}\n{}\n\n'.format(m.name, m.description, m.url)
     bot.sendMessage(uid, msg, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
-    botan.track(message, event_name='search_wo_cat')
+    botan.track(update.message, event_name='search_wo_cat')
 
 
 def process_file(bot, update):
@@ -177,7 +176,7 @@ def output(bot, update):
     os.remove(fname)
 
 
-updater = Updater(BUYPROTECT)
+updater = Updater(ALLTESTS)
 dp = updater.dispatcher
 dp.add_handler(CommandHandler('start', start))
 dp.add_handler(CommandHandler('unload', output))
