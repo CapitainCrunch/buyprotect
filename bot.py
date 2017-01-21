@@ -142,8 +142,8 @@ def process_file(bot, update):
         newFile = bot.getFile(file_id)
         newFile.download(fname)
         sheets = get_data(fname)
-        columns = ('name', 'description', 'url')
         for sheet in sheets:
+            columns = ('name', 'description', 'url')
             if sheet.lower() == 'алиасы':
                 columns = ['key', 'alias1', 'alias2', 'alias3', 'alias4', 'alias5', 'alias6', 'alias7', 'alias8', 'alias9', 'alias10']
             _data = []
