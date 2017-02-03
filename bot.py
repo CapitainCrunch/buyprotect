@@ -9,6 +9,7 @@ from collections import OrderedDict
 import logging
 from datetime import datetime as dt
 import os
+import sys
 from model import save, Users, \
     UndefinedRequests, Company, Good, Service, Aliases, DoesNotExist, fn, \
     before_request_handler, after_request_handler
@@ -176,12 +177,24 @@ def output(bot, update):
     os.remove(fname)
 
 
-updater = Updater(BUYPROTECT)
-dp = updater.dispatcher
-dp.add_handler(CommandHandler('start', start))
-dp.add_handler(CommandHandler('unload', output))
-dp.add_handler(MessageHandler(Filters.text, search_wo_cat))
-dp.add_handler(MessageHandler(Filters.document, process_file))
-updater.start_polling()
-updater.idle()
+if __name__ == '__main__':
+    updater = None
+    token = None
+    if len(sys.argv) > 1:
+        token = sys.argv[-1]
+        if token.lower() == 'buy':
+            updater = Updater(BUYPROTECT)
+            BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+            logging.basicConfig(filename=BASE_DIR + '/out.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+    else:
+        updater = Updater(ALLTESTS)
+        logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+
+    dp = updater.dispatcher
+    dp.add_handler(CommandHandler('start', start))
+    dp.add_handler(CommandHandler('unload', output))
+    dp.add_handler(MessageHandler(Filters.text, search_wo_cat))
+    dp.add_handler(MessageHandler(Filters.document, process_file))
+    updater.start_polling()
+    updater.idle()
 
