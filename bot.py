@@ -1,6 +1,5 @@
-from telegram import ReplyKeyboardMarkup, ParseMode
-from emoji import emojize
-from telegram.ext import Updater, CommandHandler, RegexHandler, MessageHandler, Filters, ConversationHandler
+from telegram import ParseMode
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from telegram.contrib.botan import Botan
 from config import BUYPROTECT, ALLTESTS, BOTAN_TOKEN
 from pyexcel_xlsx import get_data, save_data
@@ -14,8 +13,8 @@ from model import save, Users, \
     UndefinedRequests, Company, Good, Service, Aliases, DoesNotExist, fn, \
     before_request_handler, after_request_handler
 
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-logging.basicConfig(filename='logs.log', filemode='w+', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+# logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logging.basicConfig(filename='logs.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 ADMINS = [209743126, 56631662, 214688324]
 
@@ -144,8 +143,8 @@ def process_file(bot, update):
         newFile = bot.getFile(file_id)
         newFile.download(fname)
         sheets = get_data(fname)
-        columns = ('name', 'description', 'url')
         for sheet in sheets:
+            columns = ('name', 'description', 'url')
             if sheet.lower() == 'алиасы':
                 columns = ['key', 'alias1', 'alias2', 'alias3', 'alias4', 'alias5', 'alias6', 'alias7', 'alias8', 'alias9', 'alias10']
             _data = []
