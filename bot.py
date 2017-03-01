@@ -86,9 +86,9 @@ def start(bot, update):
         Users.create(telegram_id=uid, username=username, name=name)
     after_request_handler()
     if uid in ADMINS:
-        bot.sendMessage(uid, start_msg)
+        bot.sendMessage(uid, start_msg, disable_web_page_preview=True)
         return
-    bot.sendMessage(uid, start_msg)
+    bot.sendMessage(uid, start_msg, disable_web_page_preview=True)
 
 
 def search_wo_cat(bot, update):
