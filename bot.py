@@ -2,6 +2,7 @@ from telegram import ParseMode
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from telegram.contrib.botan import Botan
 from config import BUYPROTECT, ALLTESTS, BOTAN_TOKEN
+from utils import get_alias_match
 from pyexcel_xlsx import get_data, save_data
 from itertools import zip_longest
 from collections import OrderedDict
@@ -26,16 +27,7 @@ dbs = {'Компания': Company,
 SEARCH = 1
 user_search = dict()
 
-aliases = [Aliases.alias1,
-           Aliases.alias2,
-           Aliases.alias3,
-           Aliases.alias4,
-           Aliases.alias5,
-           Aliases.alias6,
-           Aliases.alias7,
-           Aliases.alias8,
-           Aliases.alias9,
-           Aliases.alias10]
+
 
 botan = Botan(BOTAN_TOKEN)
 
@@ -98,16 +90,7 @@ def search_wo_cat(bot, update):
     res = []
     msg = ''
     try:
-        check_aliases = (Aliases.select().where((fn.lower(Aliases.alias1) == message) |
-                                                (fn.lower(Aliases.alias2) == message) |
-                                                (fn.lower(Aliases.alias3) == message) |
-                                                (fn.lower(Aliases.alias4) == message) |
-                                                (fn.lower(Aliases.alias5) == message) |
-                                                (fn.lower(Aliases.alias6) == message) |
-                                                (fn.lower(Aliases.alias7) == message) |
-                                                (fn.lower(Aliases.alias8) == message) |
-                                                (fn.lower(Aliases.alias9) == message) |
-                                                (fn.lower(Aliases.alias10) == message))).execute()
+        check_aliases = get_alias_match(message)
         alias = [c.key for c in check_aliases]
         if alias:
             message = alias[0]
@@ -127,6 +110,9 @@ def search_wo_cat(bot, update):
     if not res:
         if unknown_req_add(uid, message.strip('"\'!?[]{},. ')):
             bot.sendMessage(uid, search_fckup_msg, disable_web_page_preview=True)
+            # send to Oleg
+            bot.send_message(214688324, 'Кто-то искал <b>{}</b> и не нашел'.format(message),
+                             parse_mode=ParseMode.HTML)
         else:
             bot.sendMessage(uid, search_fckup_msg, disable_web_page_preview=True)
             return
@@ -161,6 +147,16 @@ def process_file(bot, update):
         os.remove(fname)
 
 
+def clear(bot, update):
+    uid = update.message.from_user.id
+    if uid not in ADMINS:
+        return
+    if UndefinedRequests.table_exists():
+        UndefinedRequests.drop_table()
+    UndefinedRequests.create_table()
+    bot.send_message(uid, 'Таблицу очистил')
+
+
 def output(bot, update):
     print(update)
     uid = update.message.from_user.id
@@ -193,6 +189,7 @@ if __name__ == '__main__':
 
     dp = updater.dispatcher
     dp.add_handler(CommandHandler('start', start))
+    dp.add_handler(CommandHandler('clear', clear))
     dp.add_handler(CommandHandler('unload', output))
     dp.add_handler(MessageHandler(Filters.text, search_wo_cat))
     dp.add_handler(MessageHandler(Filters.document, process_file))
