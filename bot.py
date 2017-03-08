@@ -134,7 +134,7 @@ def process_file(bot, update):
         for sheet in sheets:
             columns = ('name', 'description', 'url')
             if sheet.lower() == 'алиасы':
-                columns = ['key', 'alias1', 'alias2', 'alias3', 'alias4', 'alias5', 'alias6', 'alias7', 'alias8', 'alias9', 'alias10']
+                columns = ['key'] + ['alias' + str(i) for i in range(1, 101)]
             _data = []
             for row in sheets[sheet][1:]:
                 if not row:
