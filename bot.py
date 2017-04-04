@@ -14,8 +14,6 @@ from model import save, Users, \
     UndefinedRequests, Company, Good, Service, Aliases, DoesNotExist, fn, \
     before_request_handler, after_request_handler
 
-# logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-logging.basicConfig(filename='logs.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 ADMINS = [209743126, 56631662, 214688324]
 
