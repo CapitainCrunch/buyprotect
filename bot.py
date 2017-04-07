@@ -2,7 +2,7 @@ from telegram import ParseMode
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from telegram.contrib.botan import Botan
 from config import BUYPROTECT, ALLTESTS, BOTAN_TOKEN
-from utils import get_alias_match
+from utils import get_alias_match, log
 from pyexcel_xlsx import get_data, save_data
 from itertools import zip_longest
 from collections import OrderedDict
@@ -64,6 +64,7 @@ def unknown_req_add(tid, txt):
     return False
 
 
+@log
 def start(bot, update):
     print(update)
     username = update.message.from_user.username
@@ -81,6 +82,7 @@ def start(bot, update):
     bot.sendMessage(uid, start_msg, disable_web_page_preview=True)
 
 
+@log
 def search_wo_cat(bot, update):
     print(update)
     uid = update.message.from_user.id
@@ -120,6 +122,7 @@ def search_wo_cat(bot, update):
     botan.track(update.message, event_name='search_wo_cat')
 
 
+@log
 def process_file(bot, update):
     print(update)
     uid = update.message.from_user.id
@@ -145,6 +148,7 @@ def process_file(bot, update):
         os.remove(fname)
 
 
+@log
 def clear(bot, update):
     uid = update.message.from_user.id
     if uid not in ADMINS:
@@ -155,6 +159,7 @@ def clear(bot, update):
     bot.send_message(uid, 'Таблицу очистил')
 
 
+@log
 def output(bot, update):
     print(update)
     uid = update.message.from_user.id

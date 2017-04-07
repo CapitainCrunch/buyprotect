@@ -1,5 +1,6 @@
 from model import Aliases, fn
-
+import logging
+import functools
 
 def get_alias_match(message):
     check_aliases = (Aliases.select().where((fn.lower(Aliases.alias1) == message) |
@@ -103,3 +104,16 @@ def get_alias_match(message):
                                                 (fn.lower(Aliases.alias99) == message) |
                                                 (fn.lower(Aliases.alias100) == message))).execute()
     return check_aliases
+
+
+def log(func):
+    logger = logging.getLogger(func.__module__)
+
+    @functools.wraps(func)
+    def decorator(self, *args, **kwargs):
+        logger.info('Entering: %s', func.__name__)
+        logger.info(args[0])
+        result = func(self, *args, **kwargs)
+        logger.info('Exiting: %s', func.__name__)
+        return result
+    return decorator
