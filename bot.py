@@ -163,6 +163,32 @@ def clear(bot, update):
 
 
 @log
+def clearbase(bot, update):
+    uid = update.message.from_user.id
+    if uid not in ADMINS:
+        return
+    try:
+        Company.drop_table()
+        Company.create_table()
+
+        Service.drop_table()
+        Service.create_table()
+
+        Good.drop_table()
+        Good.create_table()
+
+        Aliases.drop_table()
+        Aliases.create_table()
+    except:
+        bot.send_message(
+            uid,
+            'Что-то пошло не так. Не все таблицы очищены',
+        )
+        return
+    bot.send_message(uid, 'Таблицу очистил')
+
+
+@log
 def output(bot, update):
     print(update)
     uid = update.message.from_user.id
@@ -196,6 +222,7 @@ if __name__ == '__main__':
     dp = updater.dispatcher
     dp.add_handler(CommandHandler('start', start))
     dp.add_handler(CommandHandler('clear', clear))
+    dp.add_handler(CommandHandler('clearbase', clearbase))
     dp.add_handler(CommandHandler('unload', output))
     dp.add_handler(MessageHandler(Filters.text, search_wo_cat))
     dp.add_handler(MessageHandler(Filters.document, process_file))
