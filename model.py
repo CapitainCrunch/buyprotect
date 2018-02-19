@@ -2,23 +2,18 @@ from peewee import *
 from datetime import datetime
 from config import MYSQL_CONN
 
-db = MySQLDatabase(**MYSQL_CONN)
+from playhouse.shortcuts import RetryOperationalError
+from playhouse.pool import MySQLDatabase
 
 
-def before_request_handler():
-    db.connect()
+class MyRetryDB(RetryOperationalError, MySQLDatabase):
+    pass
 
 
-def after_request_handler():
-    db.close()
+db = MyRetryDB('buyprotect', **MYSQL_CONN)
 
 
-class BaseModel(Model):
-    class Meta:
-        database = db
-
-
-class Users(BaseModel):
+class Users:
     id = PrimaryKeyField()
     telegram_id = IntegerField(unique=1)
     username = CharField(default=None)
@@ -26,7 +21,7 @@ class Users(BaseModel):
     dt = DateTimeField(default=datetime.now())
 
 
-class Company(BaseModel):
+class Company:
     id = PrimaryKeyField()
     name = CharField(unique=1)
     description = TextField()
@@ -34,7 +29,7 @@ class Company(BaseModel):
     dt = DateTimeField(default=datetime.now())
 
 
-class Good(BaseModel):
+class Good:
     id = PrimaryKeyField()
     name = CharField(unique=1)
     description = TextField()
@@ -42,7 +37,7 @@ class Good(BaseModel):
     dt = DateTimeField(default=datetime.now())
 
 
-class Service(BaseModel):
+class Service:
     id = PrimaryKeyField()
     name = CharField(unique=1)
     description = TextField()
@@ -50,15 +45,15 @@ class Service(BaseModel):
     dt = DateTimeField(default=datetime.now())
 
 
-class UndefinedRequests(BaseModel):
+class UndefinedRequests:
     id = PrimaryKeyField()
     from_user = ForeignKeyField(Users,
-                                  to_field='telegram_id')
+                                to_field='telegram_id')
     request = CharField()
     dt = DateTimeField(default=datetime.now())
 
 
-class Aliases(BaseModel):
+class Aliases:
     id = PrimaryKeyField()
     key = CharField(unique=1)
     alias1 = TextField(default=None)

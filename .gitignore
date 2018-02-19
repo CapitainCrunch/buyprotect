@@ -90,6 +90,6 @@ ENV/
 
 
 config.py
-buy/
+buyenv/
 protect/
 .idea/

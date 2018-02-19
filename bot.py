@@ -11,9 +11,7 @@ from datetime import datetime as dt
 import os
 import sys
 from model import save, Users, \
-    UndefinedRequests, Company, Good, Service, Aliases, DoesNotExist, fn, \
-    before_request_handler, after_request_handler
-
+    UndefinedRequests, Company, Good, Service, Aliases, DoesNotExist, fn
 
 ADMINS = [209743126, 56631662, 214688324]
 
@@ -24,7 +22,6 @@ dbs = {'Компания': Company,
 
 SEARCH = 1
 user_search = dict()
-
 
 
 botan = Botan(BOTAN_TOKEN)
@@ -55,15 +52,12 @@ search_fckup_msg = '''Мы не нашли совпадений, но приня
 
 
 def unknown_req_add(tid, txt):
-    before_request_handler()
     try:
         UndefinedRequests.get(fn.lower(UndefinedRequests.request) == txt.lower())
         UndefinedRequests.create(from_user=tid, request=txt)
     except DoesNotExist:
         UndefinedRequests.create(from_user=tid, request=txt)
-        after_request_handler()
         return True
-    after_request_handler()
     return False
 
 
@@ -74,11 +68,9 @@ def start(bot, update):
     name = update.message.from_user.first_name
     uid = update.message.from_user.id
     try:
-        before_request_handler()
         Users.get(Users.telegram_id == uid)
     except DoesNotExist:
         Users.create(telegram_id=uid, username=username, name=name)
-    after_request_handler()
     if uid in ADMINS:
         bot.sendMessage(uid, start_msg, disable_web_page_preview=True)
         return
@@ -103,13 +95,11 @@ def search_wo_cat(bot, update):
     for model in dbs.values():
         if model == Aliases:
             continue
-        before_request_handler()
         try:
             search = model.get(fn.lower(model.name) == message.lower())
             res.append(search)
         except DoesNotExist:
             pass
-        after_request_handler()
     if not res:
         if unknown_req_add(uid, message.strip('"\'!?[]{},. ')):
             bot.sendMessage(uid, search_fckup_msg, disable_web_page_preview=True)
@@ -195,10 +185,8 @@ def output(bot, update):
     if uid not in ADMINS:
         return
     foud = OrderedDict()
-    before_request_handler()
     res = UndefinedRequests.select(UndefinedRequests.request, fn.COUNT(UndefinedRequests.id).alias('count')).\
         group_by(UndefinedRequests.request).execute()
-    after_request_handler()
     foud.update({'Отсутствия в базе': [(r.request, r.count) for r in res]})
     fname = str(dt.now()) + '.xlsx'
     save_data(fname, foud)
