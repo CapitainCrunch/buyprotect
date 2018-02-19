@@ -13,7 +13,12 @@ class MyRetryDB(RetryOperationalError, MySQLDatabase):
 db = MyRetryDB('buyprotect', **MYSQL_CONN)
 
 
-class Users:
+class BaseModel(Model):
+    class Meta:
+        database = db
+
+
+class Users(BaseModel):
     id = PrimaryKeyField()
     telegram_id = IntegerField(unique=1)
     username = CharField(default=None)
@@ -21,7 +26,7 @@ class Users:
     dt = DateTimeField(default=datetime.now())
 
 
-class Company:
+class Company(BaseModel):
     id = PrimaryKeyField()
     name = CharField(unique=1)
     description = TextField()
@@ -29,7 +34,7 @@ class Company:
     dt = DateTimeField(default=datetime.now())
 
 
-class Good:
+class Good(BaseModel):
     id = PrimaryKeyField()
     name = CharField(unique=1)
     description = TextField()
@@ -37,7 +42,7 @@ class Good:
     dt = DateTimeField(default=datetime.now())
 
 
-class Service:
+class Service(BaseModel):
     id = PrimaryKeyField()
     name = CharField(unique=1)
     description = TextField()
@@ -45,7 +50,7 @@ class Service:
     dt = DateTimeField(default=datetime.now())
 
 
-class UndefinedRequests:
+class UndefinedRequests(BaseModel):
     id = PrimaryKeyField()
     from_user = ForeignKeyField(Users,
                                 to_field='telegram_id')
@@ -53,7 +58,7 @@ class UndefinedRequests:
     dt = DateTimeField(default=datetime.now())
 
 
-class Aliases:
+class Aliases(BaseModel):
     id = PrimaryKeyField()
     key = CharField(unique=1)
     alias1 = TextField(default=None)
