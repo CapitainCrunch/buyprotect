@@ -1,6 +1,5 @@
 from telegram import ParseMode
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-from telegram.contrib.botan import Botan
 from config import BUYPROTECT, ALLTESTS, BOTAN_TOKEN
 from utils import get_alias_match, log
 from pyexcel_xlsx import get_data, save_data
@@ -24,8 +23,6 @@ SEARCH = 1
 user_search = dict()
 
 
-botan = Botan(BOTAN_TOKEN)
-
 start_msg = '''Привет! Я помогу тебе с безопасным выбором мест для покупки товаров и услуг и буду защищать от обмана в рекламе.
 
 В моей базе - несколько сотен компаний и рекламных роликов и она постоянно пополняется.
@@ -35,7 +32,6 @@ start_msg = '''Привет! Я помогу тебе с безопасным в
 Можешь также задать вопросы по защите прав потребителей (например, «возврат товара», «проверка качества», «технически сложные товары» и т.п.).
 
 Если информации не будет в базе, мы получим твой запрос и организуем проверку.'''
-
 
 search_fckup_msg = '''Мы не нашли совпадений, но приняли заявку на проверку!
 
@@ -112,7 +108,6 @@ def search_wo_cat(bot, update):
     for m in res:
         msg += '<b>{}</b>\n{}\n{}\n\n'.format(m.name, m.description, m.url)
     bot.sendMessage(uid, msg, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
-    botan.track(update.message, event_name='search_wo_cat')
 
 
 @log
@@ -185,7 +180,7 @@ def output(bot, update):
     if uid not in ADMINS:
         return
     foud = OrderedDict()
-    res = UndefinedRequests.select(UndefinedRequests.request, fn.COUNT(UndefinedRequests.id).alias('count')).\
+    res = UndefinedRequests.select(UndefinedRequests.request, fn.COUNT(UndefinedRequests.id).alias('count')). \
         group_by(UndefinedRequests.request).execute()
     foud.update({'Отсутствия в базе': [(r.request, r.count) for r in res]})
     fname = str(dt.now()) + '.xlsx'
@@ -202,7 +197,8 @@ if __name__ == '__main__':
         if token.lower() == 'buy':
             updater = Updater(BUYPROTECT)
             BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-            logging.basicConfig(filename=BASE_DIR + '/out.log', filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+            logging.basicConfig(filename=BASE_DIR + '/out.log', filemode='a',
+                                format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
     else:
         updater = Updater(ALLTESTS)
         logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.DEBUG)
@@ -216,4 +212,3 @@ if __name__ == '__main__':
     dp.add_handler(MessageHandler(Filters.document, process_file))
     updater.start_polling()
     updater.idle()
-
